@@ -1,48 +1,26 @@
- #!/usr/bin/python3
-""" Starts a Flash Web Application """
-from models import storage
-from models.state import State
-from models.city import City
-from models.amenity import Amenity
-from models.place import Place
-from os import environ
-from flask import Flask, render_template
-import uuid
-app = Flask(__name__)
-# app.jinja_env.trim_blocks = True
-# app.jinja_env.lstrip_blocks = True
-
-
-@app.teardown_appcontext
-def close_db(error):
-    """ Remove the current SQLAlchemy Session """
-    storage.close()
-
-
-@app.route('/1-hbnb', strict_slashes=False)
-def hbnb():
-    """ HBNB is alive! """
-    states = storage.all(State).values()
-    states = sorted(states, key=lambda k: k.name)
-    st_ct = []
-    cache_id = uuid.uuid4()
-
-    for state in states:
-        st_ct.append([state, sorted(state.cities, key=lambda k: k.name)])
-
-    amenities = storage.all(Amenity).values()
-    amenities = sorted(amenities, key=lambda k: k.name)
-
-    places = storage.all(Place).values()
-    places = sorted(places, key=lambda k: k.name)
-
-    return render_template('1-hbnb.html',
-                           states=st_ct,
-                           amenities=amenities,
-                           places=places,
-                           cache_id=cache_id)
-
-
-if __name__ == "__main__":
-    """ Main Function """
-    app.run(host='0.0.0.0', port=5000, debug=True)
+$(function () {
+    const entertainment = [];
+    $('.popover input').change(function (e) {
+      const { target } = e;
+      const name = target.getAttribute('data-name');
+      const id = target.getAttribute('data-id');
+  
+      const isChecked = $(`.popover input[data-id="${id}"]`).is(':checked');
+  
+      if (isChecked) {
+        entertainment.push(name);
+      } else {
+        const index = entertainment.indexOf(name);
+        if (index > -1) entertainment.splice(index, 1);
+      }
+  
+      if (entertainment.length > 0) {
+        const newText = entertainment.join(', ');
+        (newText.length >= 37)
+          ? $('.amenities h4').text(`${newText.slice(0, 37)}...`)
+          : $('.amenities h4').text(newText);
+      } else {
+        $('.amenities h4').html('&nbsp;');
+      }
+    });
+  });
