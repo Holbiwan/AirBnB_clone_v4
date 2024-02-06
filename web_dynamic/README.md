@@ -1,1 +1,0 @@
-README web_dynamic
