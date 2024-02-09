@@ -1,26 +1,26 @@
-$(function () {
-    const entertainment = [];
-    $('.popover input').change(function (e) {
-      const { target } = e;
-      const name = target.getAttribute('data-name');
-      const id = target.getAttribute('data-id');
-  
-      const isChecked = $(`.popover input[data-id="${id}"]`).is(':checked');
-  
-      if (isChecked) {
-        entertainment.push(name);
-      } else {
-        const index = entertainment.indexOf(name);
-        if (index > -1) entertainment.splice(index, 1);
-      }
-  
-      if (entertainment.length > 0) {
-        const newText = entertainment.join(', ');
-        (newText.length >= 37)
-          ? $('.amenities h4').text(`${newText.slice(0, 37)}...`)
-          : $('.amenities h4').text(newText);
-      } else {
-        $('.amenities h4').html('&nbsp;');
-      }
+$(document).ready(function() {
+    let amenitiesChecked = {};
+
+    $('.amenities input[type="checkbox"]').change(function() {
+        if (this.checked) {
+            amenitiesChecked[$(this).data('id')] = $(this).data('name');
+        } else {
+            delete amenitiesChecked[$(this).data('id')];
+        }
+
+        let selectedAmenities = Object.values(amenitiesChecked).join(', ');
+        const maxLength = 37; // Définir la limite de caractères ici
+
+        // Vérifier si la longueur dépasse la limite
+        if (selectedAmenities.length > maxLength) {
+            selectedAmenities = selectedAmenities.substring(0, maxLength) + '...';
+        }
+
+        // Utiliser un espace non-sécable si aucune commodité n'est sélectionnée
+        if (selectedAmenities.length === 0) {
+            selectedAmenities = "&#160;"; // Espace non-sécable HTML
+        }
+
+        $('.amenities h4').html(selectedAmenities); // Utiliser .html() au lieu de .text() pour permettre l'entité HTML
     });
-  });
+});
